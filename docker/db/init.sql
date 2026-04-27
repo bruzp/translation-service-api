@@ -1,0 +1,7 @@
+CREATE DATABASE IF NOT EXISTS tsadb;
+CREATE DATABASE IF NOT EXISTS tsadb_test;
+
+GRANT ALL PRIVILEGES ON tsadb.* TO 'tsauser'@'%';
+GRANT ALL PRIVILEGES ON tsadb_test.* TO 'tsauser'@'%';
+
+FLUSH PRIVILEGES;
