@@ -12,11 +12,13 @@ return new class () extends Migration {
     {
         Schema::create('translations', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('locale_id')->index();
-            $table->string('key')->index();
+            $table->bigInteger('locale_id');
+            $table->string('key');
             $table->text('value');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['locale_id', 'key']);
         });
     }
 

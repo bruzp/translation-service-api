@@ -10,4 +10,9 @@ class TagRepository
     {
         $translation->tags()->sync($tags);
     }
+
+    public function detachTags(Translation $translation): void
+    {
+        $translation->tags()->detach();
+    }
 }

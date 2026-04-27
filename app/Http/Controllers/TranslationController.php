@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Translation\SearchTranslationRequest;
 use App\Http\Requests\Translation\StoreTranslationRequest;
+use App\Http\Requests\Translation\UpdateTranslationRequest;
 use App\Http\Resources\Translation\TranslationResource;
+use App\Http\Resources\Translation\TranslationResourceCollection;
 use App\Services\TranslationService;
+use Illuminate\Http\Response;
 
 class TranslationController extends Controller
 {
@@ -12,17 +16,44 @@ class TranslationController extends Controller
     {
     }
 
-    public function store(StoreTranslationRequest $request)
+    public function index(SearchTranslationRequest $request): TranslationResourceCollection
     {
-        $data = $request->validated();
+        $translations = $this->translationService->searchTranslations(
+            $request->getSearchParams(),
+            $request->getPaginatorConfig()
+        );
 
-        $translation = $this->translationService->storeTranslation(
-            $data['localeId'],
-            $data['key'],
-            $data['value'],
-            $data['tags'] ?? []
+        return new TranslationResourceCollection($translations);
+    }
+
+    public function show(int $id): TranslationResource
+    {
+        $translation = $this->translationService->getById($id);
+
+        return new TranslationResource($translation);
+    }
+
+    public function store(StoreTranslationRequest $request): TranslationResource
+    {
+        $translation = $this->translationService->storeTranslation($request->getTranslationParams());
+
+        return new TranslationResource($translation);
+    }
+
+    public function update(int $id, UpdateTranslationRequest $request): TranslationResource
+    {
+        $translation = $this->translationService->updateTranslation(
+            $id,
+            $request->getTranslationParams()
         );
 
         return new TranslationResource($translation);
+    }
+
+    public function destroy(int $id): Response
+    {
+        $this->translationService->deleteTranslation($id);
+
+        return response()->noContent();
     }
 }

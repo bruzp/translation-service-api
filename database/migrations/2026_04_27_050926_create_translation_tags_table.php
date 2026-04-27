@@ -12,8 +12,10 @@ return new class () extends Migration {
     {
         Schema::create('translation_tags', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('translation_id')->index();
-            $table->bigInteger('tag_id')->index();
+            $table->bigInteger('translation_id');
+            $table->bigInteger('tag_id');
+
+            $table->index(['translation_id', 'tag_id']);
         });
     }
 

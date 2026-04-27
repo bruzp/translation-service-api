@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests\Translation;
 
-use Illuminate\Validation\Rule;
+use App\DTO\Translation\TranslationParams;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use App\DTO\Translation\TranslationParams;
+use Illuminate\Validation\Rule;
 
-class StoreTranslationRequest extends FormRequest
+class UpdateTranslationRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -27,7 +27,8 @@ class StoreTranslationRequest extends FormRequest
                 'required',
                 'string',
                 Rule::unique('translations', 'key')
-                    ->where('locale_id', $this->input('localeId')),
+                    ->where('locale_id', $this->input('localeId'))
+                    ->ignore($this->route('translation')),
             ],
             'value' => ['required', 'string'],
             'tags' => ['nullable', 'array'],
