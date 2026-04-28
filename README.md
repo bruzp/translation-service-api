@@ -171,3 +171,4 @@ This ensures:
 - Translations are stored per locale and can be filtered by tag.
 - The export endpoint reflects the latest data using ETag validation.
 - The system is designed to handle large datasets efficiently with proper indexing.
+- **phpMyAdmin is included for testing only and should not be used in production.**
