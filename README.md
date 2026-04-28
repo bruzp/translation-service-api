@@ -84,6 +84,19 @@ POST /api/auth/logout
 
 ---
 
+### Sample User
+
+A default user is available after seeding:
+
+```
+Email: test@example.com
+Password: password
+```
+
+> Password is the default factory password.
+
+---
+
 ### Protected Translation Endpoints
 
 ```
