@@ -3,15 +3,9 @@
 use App\Models\Locale;
 use App\Models\Tag;
 use App\Models\Translation;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 
 uses(RefreshDatabase::class);
-
-beforeEach(function () {
-    Sanctum::actingAs(User::factory()->create());
-});
 
 it('requires locale', function () {
     $response = $this->getJson('/api/translations/export');
@@ -20,7 +14,7 @@ it('requires locale', function () {
         ->assertJsonValidationErrors(['locale']);
 });
 
-it('exports translations by locale', function () {
+it('exports translations by locale publicly', function () {
     $locale = Locale::factory()->english()->create();
 
     Translation::factory()->forLocale($locale)->create([
@@ -41,10 +35,20 @@ it('exports translations by locale', function () {
             'auth.login' => 'Login',
             'auth.logout' => 'Logout',
         ])
-        ->assertJsonMissingPath('tag');
+        ->assertJsonMissingPath('tag')
+        ->assertHeader('ETag');
+
+    expect($response->headers->get('ETag'))->toStartWith('"')->toEndWith('"');
+
+    $cacheControl = $response->headers->get('Cache-Control');
+
+    expect($cacheControl)
+        ->toContain('public')
+        ->toContain('max-age=0')
+        ->toContain('must-revalidate');
 });
 
-it('exports translations by locale and tag', function () {
+it('exports translations by locale and tag publicly', function () {
     $locale = Locale::factory()->english()->create();
     $web = Tag::factory()->web()->create();
     $mobile = Tag::factory()->mobile()->create();
@@ -70,7 +74,17 @@ it('exports translations by locale and tag', function () {
         ->assertJsonFragment([
             'auth.login' => 'Login',
         ])
-        ->assertJsonMissingPath('translations.auth.pin');
+        ->assertJsonMissing([
+            'auth.pin' => 'PIN',
+        ])
+        ->assertHeader('ETag');
+
+    $cacheControl = $response->headers->get('Cache-Control');
+
+    expect($cacheControl)
+        ->toContain('public')
+        ->toContain('max-age=0')
+        ->toContain('must-revalidate');
 });
 
 it('exports latest updated translation value', function () {
@@ -106,5 +120,62 @@ it('does not export deleted translations', function () {
     $response = $this->getJson('/api/translations/export?locale=en');
 
     $response->assertOk()
-        ->assertJsonMissingPath('translations.auth.login');
+        ->assertJsonMissing([
+            'auth.login' => 'Login',
+        ]);
+});
+
+it('returns not modified when etag matches', function () {
+    $locale = Locale::factory()->english()->create();
+
+    Translation::factory()->forLocale($locale)->create([
+        'key' => 'auth.login',
+        'value' => 'Login',
+    ]);
+
+    $firstResponse = $this->getJson('/api/translations/export?locale=en');
+
+    $etag = $firstResponse->headers->get('ETag');
+
+    $secondResponse = $this
+        ->withHeader('If-None-Match', $etag)
+        ->getJson('/api/translations/export?locale=en');
+
+    $secondResponse->assertStatus(304)
+        ->assertHeader('ETag', $etag);
+
+    $cacheControl = $secondResponse->headers->get('Cache-Control');
+
+    expect($cacheControl)
+        ->toContain('public')
+        ->toContain('max-age=0')
+        ->toContain('must-revalidate');
+});
+
+it('returns new response when etag does not match after translation update', function () {
+    $locale = Locale::factory()->english()->create();
+
+    $translation = Translation::factory()->forLocale($locale)->create([
+        'key' => 'auth.login',
+        'value' => 'Login',
+    ]);
+
+    $firstResponse = $this->getJson('/api/translations/export?locale=en');
+
+    $oldEtag = $firstResponse->headers->get('ETag');
+
+    $translation->update([
+        'value' => 'Sign in',
+    ]);
+
+    $secondResponse = $this
+        ->withHeader('If-None-Match', $oldEtag)
+        ->getJson('/api/translations/export?locale=en');
+
+    $secondResponse->assertOk()
+        ->assertJsonFragment([
+            'auth.login' => 'Sign in',
+        ]);
+
+    expect($secondResponse->headers->get('ETag'))->not->toBe($oldEtag);
 });

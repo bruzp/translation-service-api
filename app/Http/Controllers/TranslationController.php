@@ -68,6 +68,18 @@ class TranslationController extends Controller
             $data['tag']
         );
 
-        return response()->json($translations);
+        $etag = '"' . md5(json_encode($translations)) . '"';
+
+        if ($request->header('If-None-Match') === $etag) {
+            return response()
+                ->json(null, 304)
+                ->header('Cache-Control', 'public, max-age=0, must-revalidate')
+                ->header('ETag', $etag);
+        }
+
+        return response()
+            ->json($translations)
+            ->header('Cache-Control', 'public, max-age=0, must-revalidate')
+            ->header('ETag', $etag);
     }
 }

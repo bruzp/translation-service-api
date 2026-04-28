@@ -4,10 +4,7 @@ use App\Models\Locale;
 use App\Models\Tag;
 use App\Models\Translation;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-
-uses(RefreshDatabase::class);
 
 beforeEach(function () {
     Sanctum::actingAs(User::factory()->create());

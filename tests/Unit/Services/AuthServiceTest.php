@@ -2,11 +2,7 @@
 
 use App\Models\User;
 use App\Services\AuthService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 it('gets the authenticated user', function () {
     $user = User::factory()->create();

@@ -3,10 +3,6 @@
 use App\Models\Locale;
 use App\Repositories\LocaleRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 it('finds locale id by code', function () {
     $locale = Locale::factory()->english()->create();

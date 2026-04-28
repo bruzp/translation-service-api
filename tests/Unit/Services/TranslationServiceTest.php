@@ -3,10 +3,6 @@
 use App\Models\Locale;
 use App\Models\Translation;
 use App\Services\TranslationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 it('formats export response without tag', function () {
     $locale = Locale::factory()->english()->create();

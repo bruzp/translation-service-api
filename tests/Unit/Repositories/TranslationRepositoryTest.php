@@ -4,10 +4,6 @@ use App\Models\Locale;
 use App\Models\Tag;
 use App\Models\Translation;
 use App\Repositories\TranslationRepository;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
-uses(TestCase::class, RefreshDatabase::class);
 
 it('exports translations by locale id as key value collection', function () {
     $locale = Locale::factory()->english()->create();

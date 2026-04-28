@@ -1,9 +1,6 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 it('logs in with valid credentials', function () {
     User::factory()->create([
