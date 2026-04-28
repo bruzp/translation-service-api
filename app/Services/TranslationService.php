@@ -6,6 +6,7 @@ use App\DTO\PagingParams;
 use App\DTO\Translation\SearchTranslationParams;
 use App\DTO\Translation\TranslationParams;
 use App\Models\Translation;
+use App\Repositories\LocaleRepository;
 use App\Repositories\TagRepository;
 use App\Repositories\TranslationRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -15,7 +16,8 @@ class TranslationService
 {
     public function __construct(
         private readonly TranslationRepository $translationRepository,
-        private readonly TagRepository $tagRepository
+        private readonly TagRepository $tagRepository,
+        private readonly LocaleRepository $localeRepository
     ) {
     }
 
@@ -68,5 +70,18 @@ class TranslationService
 
             $this->translationRepository->delete($translation);
         });
+    }
+
+    public function exportTranslations(string $locale, ?string $tag)
+    {
+        $localeId = $this->localeRepository->findIdByCode($locale);
+
+        $translations = $this->translationRepository->exportByLocaleAndTag($localeId, $tag);
+
+        return [
+            'locale' => $locale,
+            ...($tag ? ['tag' => $tag] : []),
+            'translations' => $translations,
+        ];
     }
 }

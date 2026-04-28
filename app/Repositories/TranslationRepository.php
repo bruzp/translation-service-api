@@ -7,6 +7,7 @@ use App\Models\Translation;
 use App\DTO\Translation\SearchTranslationParams;
 use App\DTO\PagingParams;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class TranslationRepository
@@ -52,6 +53,23 @@ class TranslationRepository
     public function delete(Translation $translation): void
     {
         $translation->delete();
+    }
+
+    public function exportByLocaleAndTag(int $localeId, ?string $tag): Collection
+    {
+        $query = Translation::query()
+            ->select([
+                'translations.key',
+                'translations.value',
+            ])
+            ->where('translations.locale_id', $localeId)
+            ->when(filled($tag), function ($query) use ($tag) {
+                $query->whereHas('tags', function ($query) use ($tag) {
+                    $query->where('tags.name', $tag);
+                });
+            });
+
+        return $query->pluck('value', 'key');
     }
 
     private function applyWithEagerLoad(Builder $query): void

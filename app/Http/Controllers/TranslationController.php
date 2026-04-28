@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Translation\ExportTranslationRequest;
 use App\Http\Requests\Translation\SearchTranslationRequest;
 use App\Http\Requests\Translation\StoreTranslationRequest;
 use App\Http\Requests\Translation\UpdateTranslationRequest;
 use App\Http\Resources\Translation\TranslationResource;
 use App\Http\Resources\Translation\TranslationResourceCollection;
 use App\Services\TranslationService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 class TranslationController extends Controller
@@ -55,5 +57,17 @@ class TranslationController extends Controller
         $this->translationService->deleteTranslation($id);
 
         return response()->noContent();
+    }
+
+    public function export(ExportTranslationRequest $request): JsonResponse
+    {
+        $data = $request->getExportParams();
+
+        $translations = $this->translationService->exportTranslations(
+            $data['locale'],
+            $data['tag']
+        );
+
+        return response()->json($translations);
     }
 }

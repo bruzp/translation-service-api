@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['locale_id', 'key']);
+            $table->unique(['locale_id', 'key']);
         });
     }
 
