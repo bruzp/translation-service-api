@@ -46,10 +46,10 @@ class SearchTranslationRequest extends FormRequest
     public function getPaginatorConfig(): PagingParams
     {
         return new PagingParams(
-            $this->validated('page'),
-            $this->validated('perPage'),
-            $this->validated('sortBy'),
-            $this->validated('sortOrder'),
+            ...($this->validated('page') ? ['page' => $this->validated('page')] : []),
+            ...($this->validated('perPage') ? ['perPage' => $this->validated('perPage')] : []),
+            ...($this->validated('sortBy') ? ['sortBy' => $this->validated('sortBy')] : []),
+            ...($this->validated('sortOrder') ? ['sortOrder' => $this->validated('sortOrder')] : []),
         );
     }
 }

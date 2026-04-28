@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $id
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 class Translation extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     public function tags(): BelongsToMany
     {

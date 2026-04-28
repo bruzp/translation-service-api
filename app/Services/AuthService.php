@@ -67,6 +67,6 @@ class AuthService
 
     private function throttleKey(AuthRequest $request): string
     {
-        return Str::transliterate(Str::lower($request->safe()->input('loginId')).'|'.request()->ip());
+        return Str::transliterate(Str::lower($request->safe()->input('email')).'|'.request()->ip());
     }
 }
