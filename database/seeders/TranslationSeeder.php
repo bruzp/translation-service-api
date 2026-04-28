@@ -12,8 +12,8 @@ class TranslationSeeder extends Seeder
 {
     public function run(): void
     {
-        $limit = 100000;
-        $chunkSize = 5000;
+        $limit = 200000;
+        $chunkSize = 10000;
 
         $locales = Locale::pluck('id')->toArray();
         $tags = Tag::pluck('id')->toArray();
