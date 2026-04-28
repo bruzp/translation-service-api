@@ -54,9 +54,11 @@ it('logs out authenticated user', function () {
 
     $token = $user->createToken('test-token')->plainTextToken;
 
-    $this
+    $response = $this
         ->withHeader('Authorization', "Bearer {$token}")
         ->postJson('/api/auth/logout');
+
+    $response->assertNoContent();
 
     expect($user->tokens()->count())->toBe(0);
 });
